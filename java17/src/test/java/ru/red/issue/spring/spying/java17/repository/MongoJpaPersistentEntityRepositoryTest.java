@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
+import org.mockito.internal.creation.bytebuddy.InlineByteBuddyMockMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.red.issue.spring.spying.java17.container.MongoContainerizedTest;
 import ru.red.issue.spring.spying.java17.domain.MongoPersistentEntity;
@@ -11,6 +12,7 @@ import ru.red.issue.spring.spying.java17.domain.MongoPersistentEntity;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
@@ -22,6 +24,18 @@ class MongoJpaPersistentEntityRepositoryTest extends MongoContainerizedTest {
     @Spy
     @Autowired
     private MongoPersistentEntityRepository repository;
+
+    @Test
+    void repo_isSpy_test() {
+        assertTrue(mockingDetails(repository).isSpy());
+    }
+
+    @Test
+    void repo_isMockable_test() {
+        assertTrue(new InlineByteBuddyMockMaker().isTypeMockable(repository.getClass()).mockable());
+        // Exception is caused after test
+        log.info("Should get here");
+    }
 
     @Test
     void richSave_repositoryHas3Invocations_test() {
